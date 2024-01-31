@@ -1,0 +1,8 @@
+# Ignore the matching_result folder and all its subfolders
+matching_result/
+
+# Ignore the ID.py file
+ID.py
+
+# Ignore .idea directory
+.idea/
