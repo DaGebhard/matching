@@ -68,13 +68,21 @@ for choice in range(1, 9):
         if row[f'Deine {choice}. Präferenz für eine Präsentation '] in options and matching[f'Präsentation {row[f"Deine {choice}. Präferenz für eine Präsentation "]}'].sum() < MAXIMUM_PER_OPTION and matching.loc[matching['Deine E-Mail Adresse:'] == row['Deine E-Mail Adresse:'], relevant_columns].values.ravel().sum() < MAXIMUM_PER_APPLICANT:
             matching.loc[matching['Deine E-Mail Adresse:'] == row['Deine E-Mail Adresse:'], f'Präsentation {row[f"Deine {choice}. Präferenz für eine Präsentation "]}'] = True
 
+    # BCG Workshop has to be done only once
+    if choice == 1:
+        for index, row in df[
+            ['Deine E-Mail Adresse:', 'Interesse am Workshop von The Boston Consulting Group']].iterrows():
+            if row[
+                'Interesse am Workshop von The Boston Consulting Group'] == 'Ich habe an einer Workshopteilnahme Interesse.' and \
+                    matching.loc[matching['Deine E-Mail Adresse:'] == row[
+                        'Deine E-Mail Adresse:'], relevant_columns].values.ravel().sum() < MAXIMUM_PER_APPLICANT and \
+                    matching['Workshop The Boston Consulting Group'].sum() < MAXIMUM_PER_OPTION:
+                matching.loc[matching['Deine E-Mail Adresse:'] == row[
+                    'Deine E-Mail Adresse:'], 'Workshop The Boston Consulting Group'] = True
 
     # Randomize order of rows
     df = df.sample(frac=1).reset_index(drop=True)
 
-for index, row in df[['Deine E-Mail Adresse:', 'Interesse am Workshop von The Boston Consulting Group']].iterrows():
-    if row['Interesse am Workshop von The Boston Consulting Group'] == 'Ich habe an einer Workshopteilnahme Interesse.' and matching.loc[matching['Deine E-Mail Adresse:'] == row['Deine E-Mail Adresse:'], relevant_columns].values.ravel().sum() < MAXIMUM_PER_APPLICANT and matching['Workshop The Boston Consulting Group'].sum() < MAXIMUM_PER_OPTION:
-        matching.loc[matching['Deine E-Mail Adresse:'] == row['Deine E-Mail Adresse:'], 'Workshop The Boston Consulting Group'] = True
 
 # Create a table and a folder for each option, save CVs and table in folder
 if os.path.exists(SAVE_PATH):
