@@ -14,8 +14,8 @@ from ID import spread_sheet_id
 # Import data into pandas table
 # Read the Google Sheet data into a pandas DataFrame
 df = pd.read_csv(f'https://docs.google.com/spreadsheets/d/{spread_sheet_id}/export?format=csv')
-df = df[df['Ich werde am FKT 2024 am 27.03.2023...'] ==
-"... teilnehmen und möchte Einzelgespräche / Workshops besuchen. (Weiter geht's!)"]
+df = df.rename(columns={'BEA-Jahrgang\nBsp.: 24 (kein Punkt, Anführungszeichen oder sonst was)': 'BEA-Jahrgang'})
+df = df[df['Ich werde am FKT 2024 am 27.03.2023...'] == "... teilnehmen und möchte Einzelgespräche / Workshops besuchen. (Weiter geht's!)"]
 
 # Randomize order of rows
 df = df.sample(frac=1).reset_index(drop=True)
@@ -23,8 +23,7 @@ df = df.sample(frac=1).reset_index(drop=True)
 # Fill a new table with all applicants and options, default to False
 identifying_columns = ['Deine E-Mail Adresse:', 'Vorname', 'Nachname', 'Aktueller Studienabschnitt',
                                    'Dein Studiengang', 'Deine Universität',
-                                   'BEA-Jahrgang\nBsp.: 24 (kein Punkt, Anführungszeichen oder sonst was)',
-                                   'Bitte lade hier Deinen aktuellen Lebenslauf als PDF-Datei hoch!']
+                                   'BEA-Jahrgang','Bitte lade hier Deinen aktuellen Lebenslauf als PDF-Datei hoch!']
 matching = df[identifying_columns].copy()
 options = ['Auswärtiges Amt', 'Boston Consulting Group', 'Allianz ONE', 'Bertelsmann', 'Brainlab', 'FarmInsect', 'Pelion Green Future',
            'McKinsey & Co.', 'MunichRE', 'Orcan Energy AG', 'Ritzenhöfer & company', 'SAX Power', 'SelectCode', 'Siemens Advanta Consulting',
@@ -95,7 +94,7 @@ for option in relevant_columns:
     os.mkdir(option)
     os.chdir(option)
     option_df = matching.loc[matching[option] == True, identifying_columns]
-    option_df.to_csv(f'Kandidaten {option}.csv')
+    option_df.to_csv(f'Kandidaten {option}.csv', sep=';')
     for index, row in option_df.iterrows():
         url = row["Bitte lade hier Deinen aktuellen Lebenslauf als PDF-Datei hoch!"]
         # Modify the URL to point directly to the file download
@@ -113,3 +112,5 @@ for option in relevant_columns:
 
 for index, row in matching.iterrows():
     print(f'{row["Vorname"]} {row["Nachname"]}: {row[relevant_columns].sum()}')
+
+matching.to_csv('matching.csv', sep=';')
