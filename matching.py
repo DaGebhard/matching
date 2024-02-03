@@ -95,7 +95,7 @@ for option in relevant_columns:
     os.mkdir(option)
     os.chdir(option)
     option_df = matching.loc[matching[option] == True, identifying_columns]
-    option_df.to_csv(f'Teilnehmer {option}.csv')
+    option_df.to_csv(f'Kandidaten {option}.csv')
     for index, row in option_df.iterrows():
         url = row["Bitte lade hier Deinen aktuellen Lebenslauf als PDF-Datei hoch!"]
         # Modify the URL to point directly to the file download
@@ -109,6 +109,7 @@ for option in relevant_columns:
             with open(f'{row["Nachname"]}{row["Vorname"]}.pdf', 'wb') as file:
                 file.write(response.content)
     os.chdir('..')
+    shutil.make_archive(option, 'zip', option)
 
 for index, row in matching.iterrows():
     print(f'{row["Vorname"]} {row["Nachname"]}: {row[relevant_columns].sum()}')
